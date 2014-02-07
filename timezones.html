@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Timezones</title>
+    <script type="text/javascript" src="frameworks/moment.js"></script>
+    <script type="text/javascript" src="frameworks/jquery-2.0.3.js"></script>
+    <script type="text/javascript" src="frameworks/watch.js"></script>
+    <script type="text/javascript"
+      src="https://maps.googleapis.com/maps/api/js?sensor=false&libraries=visualization">
+    </script>
+    <style>
+        html, body, #map-canvas {
+            height: 100%;
+            width: 100%;
+            margin: 0px;
+            padding: 0px
+          }
+        span {
+            padding-left: 50px;
+        }
+
+        #menu, #buttons {
+            position: absolute;
+            z-index: 5;
+        }
+
+        #buttons {
+            padding-top: 35pxl
+        }
+    </style>
+    <script>
+        var offsets = { 
+            start : 0,
+            end : 0
+        };
+
+        function totalOffset(dst, raw) {
+          return (dst+raw)/(60*60);
+        }
+
+        var geocoder;
+        var map;
+        console.log($(window).width());
+        console.log($(window).height());
+        function initialize() {
+
+          geocoder = new google.maps.Geocoder();
+          var mapOptions = {
+            zoom: 1,
+            center: new google.maps.LatLng(0, 0),
+            disableDefaultUI: true,
+          }
+
+          var stylesArray = [
+          {
+            featureType: 'all',
+            stylers: [
+            {color: "#dafec2"},
+            {visibility: "simplified"}
+            ]
+          },
+          {
+            featureType: 'water',
+            stylers: [
+            {color: "#ffffff"}, //#e4ffff"},
+            {visibility: "simplified"}
+            ]
+          }]
+          map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
+          map.setOptions({ styles: stylesArray });
+        }
+
+        function codeAddress(address, first) {
+          var location;
+          geocoder.geocode( { 'address': address}, function(results, status) {
+            if (status == google.maps.GeocoderStatus.OK) {
+              location = results[0].geometry.location;
+              retrieveTime(location.lat() + "," + location.lng(), first);
+            } else {
+              alert("Geocode was not successful for the following reason: " + status);
+            }
+          });
+        }
+
+        function retrieveTime(location, first) {
+            var temp;
+            var unix_time = moment().unix();
+            var url = "https://maps.googleapis.com/maps/api/timezone/json?location="
+                        + location + "&timestamp=" + unix_time + "&sensor=false";
+            $.getJSON(url, function(json) { 
+                if(json.status == "OK") {
+                  temp = json;
+                  if(first) {
+                    offsets.start = totalOffset(temp.dstOffset, temp.rawOffset);
+                  }
+                  else {
+                    offsets.end = totalOffset(temp.dstOffset, temp.rawOffset);
+                  }
+                } else {
+                  console.log("Something went wrong with the request");
+                }
+          });
+        }
+
+        watch(offsets, ["start", "end"], function() {
+            $('#start').html(moment().zone(-(offsets.start)).format('HH:mm'));
+            var diff = -(offsets.start-offsets.end);
+            if(diff > 0) diff = "+" + diff;
+            $('#diff').html(diff);
+            $('#end').html(moment().zone(-(offsets.end)).format('HH:mm'));
+
+        });
+
+        // . change jquery
+        // angular js
+
+        // form on submit with enter
+        // get values
+        // return false/ prevent default
+        function codeAddressBoth() {
+          var addressStart = document.getElementById("addressStart").value;
+          var addressFinish = document.getElementById("addressFinish").value;
+
+          codeAddress(addressStart, true);
+
+          codeAddress(addressFinish, false);
+        }
+    </script>
+  </head>
+
+<body onload="initialize()">
+    <div id="menu">
+    <h1><span id="start"></span>
+        <span id="diff"></span>
+        <span id="end"></span></h1>
+
+    </div>
+
+    <div id="buttons">
+        <input id="addressStart" type="textbox" value="Singapore">
+        <input id="addressFinish" type="textbox" value="Stockholm">
+        <input type="button" value="Encode" onclick="codeAddressBoth()">
+    </div>
+
+    <div id="map-canvas"></div>
+</body>
+</html> 
