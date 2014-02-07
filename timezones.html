@@ -3,46 +3,32 @@
   <head>
     <meta charset="utf-8">
     <title>Timezones</title>
+    <link rel="stylesheet" type="text/css" href="style.css" />
     <script type="text/javascript" src="frameworks/moment.js"></script>
     <script type="text/javascript" src="frameworks/jquery-2.0.3.js"></script>
     <script type="text/javascript" src="frameworks/watch.js"></script>
     <script type="text/javascript"
       src="https://maps.googleapis.com/maps/api/js?sensor=false&libraries=visualization">
     </script>
-    <style>
-        html, body, #map-canvas {
-            height: 100%;
-            width: 100%;
-            margin: 0px;
-            padding: 0px
-          }
-        span {
-            padding-left: 50px;
-        }
-
-        #menu, #buttons {
-            position: absolute;
-            z-index: 5;
-        }
-
-        #buttons {
-            padding-top: 35pxl
-        }
-    </style>
     <script>
+        // timeoffsets for time where user "starts" and
+        // offsets time to where user wants to compare: "end"
+        // measured here in hours
         var offsets = { 
             start : 0,
             end : 0
         };
 
+        // compute the total offset (daylight and timezone)
+        // from seconds to hours as well
         function totalOffset(dst, raw) {
           return (dst+raw)/(60*60);
         }
 
         var geocoder;
         var map;
-        console.log($(window).width());
-        console.log($(window).height());
+        // initializes google maps geocoder and map
+        // executes on body onload()
         function initialize() {
 
           geocoder = new google.maps.Geocoder();
@@ -52,6 +38,7 @@
             disableDefaultUI: true,
           }
 
+          // simple style for map
           var stylesArray = [
           {
             featureType: 'all',
@@ -67,10 +54,15 @@
             {visibility: "simplified"}
             ]
           }]
+
+          // create map and attach to canvas
           map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
           map.setOptions({ styles: stylesArray });
         }
 
+        // encodes the address from a string
+        // to a location in Latitud & Longitud
+        // nested retrieveTime to avoid async callback
         function codeAddress(address, first) {
           var location;
           geocoder.geocode( { 'address': address}, function(results, status) {
@@ -83,6 +75,9 @@
           });
         }
 
+        // calls the googlemaps timezone api
+        // to retrieve timeoffsets for the location
+        // saves to the global variables start&end offsets
         function retrieveTime(location, first) {
             var temp;
             var unix_time = moment().unix();
@@ -103,6 +98,8 @@
           });
         }
 
+        // listens to changes in start&end offsets
+        // then changes values in html
         watch(offsets, ["start", "end"], function() {
             $('#start').html(moment().zone(-(offsets.start)).format('HH:mm'));
             var diff = -(offsets.start-offsets.end);
@@ -118,6 +115,10 @@
         // form on submit with enter
         // get values
         // return false/ prevent default
+
+
+        // function is called when encode-button is clicked
+        // goes into codeaddress to perfom time update
         function codeAddressBoth() {
           var addressStart = document.getElementById("addressStart").value;
           var addressFinish = document.getElementById("addressFinish").value;
