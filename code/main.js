@@ -3,7 +3,9 @@
 // measured here in hours
 var offsets = { 
     start : 0,
-    end : 0
+    end : 0,
+    atTime : 20,
+    timeIsSet : false
 };
 
 // compute the total offset (daylight and timezone)
@@ -54,22 +56,36 @@ function retrieveTime(location, first) {
 
 // listens to changes in start&end offsets
 // then changes values in html
-watch(offsets, ["start", "end"], function() {
+watch(offsets, ["start", "end", "atTime"], function() {
     // check difference in time
-    var message;
+    var message, start_local, end_local;
+
+    // calculate diff
     var diff = -(offsets.start-offsets.end);
+
+    // check start and end
+    if(!offsets.timeIsSet) {
+        start_local = moment().zone(-(offsets.start)).format('HH:mm'),
+        end_local = moment().zone(-(offsets.end)).format('HH:mm');
+    }
+    else {
+        start_local = offsets.atTime + ":00";
+        var temp_end = (offsets.atTime + diff)%24;
+        if(temp_end<10 && temp_end>=0) temp_end = "0" + temp_end;
+        end_local = temp_end + ":00";
+    }
+
+    // append hours
     if(diff > 0) diff = "+" + diff + " Hours";
     else if (diff == 0) diff = "";
     else diff = diff + " Hours";
 
-    // update spans for times
-    var start = moment().zone(-(offsets.start)).format('HH:mm'),
-        end = moment().zone(-(offsets.end)).format('HH:mm');
-    $('#start').html(start);
+    // update html
+    $('#start').html(start_local);
     $('#diff').html(diff);
-    $('#end').html(end);
+    $('#end').html(end_local);
 
-    setMessage(start, diff, end);
+    setMessage(start_local, diff, end_local);
 });
 
 // function is called when form is completed with enter
