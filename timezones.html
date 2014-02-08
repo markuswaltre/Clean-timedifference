@@ -3,12 +3,14 @@
   <head>
     <meta charset="utf-8">
     <title>Timezones</title>
+    <link rel="stylesheet" type="text/css" href="reseter.css" />
     <link rel="stylesheet" type="text/css" href="style.css" />
+    <link rel='stylesheet' type='text/css' href='http://fonts.googleapis.com/css?family=Open+Sans:700' />
     <script type="text/javascript" src="frameworks/moment.js"></script>
     <script type="text/javascript" src="frameworks/jquery-2.0.3.js"></script>
     <script type="text/javascript" src="frameworks/watch.js"></script>
     <script type="text/javascript"
-      src="https://maps.googleapis.com/maps/api/js?sensor=false&libraries=visualization">
+      src="https://maps.googleapis.com/maps/api/js?sensor=false">
     </script>
     <script>
         // timeoffsets for time where user "starts" and
@@ -25,17 +27,14 @@
           return (dst+raw)/(60*60);
         }
 
-        var geocoder = new google.maps.Geocoder();
-
-
         // encodes the address from a string
         // to a location in Latitud & Longitud
         // nested retrieveTime to avoid async callback
         function codeAddress(address, first) {
-          var location;
+          var geocoder = new google.maps.Geocoder();
           geocoder.geocode( { 'address': address}, function(results, status) {
             if (status == google.maps.GeocoderStatus.OK) {
-              location = results[0].geometry.location;
+              var location = results[0].geometry.location;
               retrieveTime(location.lat() + "," + location.lng(), first);
             } else {
               alert("Geocode was not successful for the following reason: " + status);
@@ -69,49 +68,69 @@
         // listens to changes in start&end offsets
         // then changes values in html
         watch(offsets, ["start", "end"], function() {
-            $('#start').html(moment().zone(-(offsets.start)).format('HH:mm'));
+            // check difference in time
             var diff = -(offsets.start-offsets.end);
-            if(diff > 0) diff = "+" + diff;
+            if(diff > 0) diff = "+" + diff + " Hours";
+            else if (diff == 0) diff = "Same time";
+            else diff = diff + " Hours";
+
+            // update spans for times
+            $('#start').html(moment().zone(-(offsets.start)).format('HH:mm'));
             $('#diff').html(diff);
             $('#end').html(moment().zone(-(offsets.end)).format('HH:mm'));
 
         });
 
-        // . change jquery
-        // angular js
-
-        // form on submit with enter
-        // get values
-        // return false/ prevent default
-
-
-        // function is called when encode-button is clicked
+        // function is called when form is completed with enter
         // goes into codeaddress to perfom time update
-        function codeAddressBoth() {
-          var addressStart = document.getElementById("addressStart").value;
-          var addressFinish = document.getElementById("addressFinish").value;
+        function codeBothAdresses() {
+          var address_start = $("#address_start").val();
+          var address_end = $("#address_end").val();
 
-          codeAddress(addressStart, true);
-
-          codeAddress(addressFinish, false);
+          // true for start, false for end
+          codeAddress(address_start, true);
+          codeAddress(address_end, false);
         }
+
+        // listens to keypress enter
+        // submits form on enter
+        // listens to submit and enter codeBothAdresses
+        $(document).ready(function(){
+          $('body').keypress(function(e) {
+            if(e.which == 13) {
+              e.preventDefault();
+              $('#formid').submit();
+            }
+          });
+          $('#formid').submit(function(e){
+            e.preventDefault();
+            codeBothAdresses();
+          });
+        });
     </script>
   </head>
 
-<body onload="initialize()">
-    <div id="menu">
-    <h1><span id="start"></span>
+<body>
+  <div id="outerdiv">
+    <div id="innerdiv">
+      <div id="form">
+        <form id="formid" class="disable-select" action="#">
+          <input type="text" id="address_start" value="" placeholder="Singapore" />
+          <input type="text" id="address_end" value="" placeholder="Stockholm" />
+        </form>
+      </div>
+
+      <div id="texts">
+        <p id="rightnow">Time right now in</p>
+        <p id="andin">And in</p>
+      </div>
+
+      <div id="times">
+        <span id="start"></span>
         <span id="diff"></span>
-        <span id="end"></span></h1>
-
+        <span id="end"></span>
+      </div>
     </div>
-
-    <div id="buttons">
-        <input id="addressStart" type="textbox" value="Singapore">
-        <input id="addressFinish" type="textbox" value="Stockholm">
-        <input type="button" value="Encode" onclick="codeAddressBoth()">
-    </div>
-
-    <div id="map-canvas"></div>
+  </div>
 </body>
 </html> 

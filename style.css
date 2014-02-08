@@ -1,18 +1,79 @@
-html, body, #map-canvas {
-    height: 100%;
-    width: 100%;
-    margin: 0px;
-    padding: 0px
-  }
-span {
-    padding-left: 50px;
+body, #form input {
+	font-family: 'Open Sans', sans-serif;
+	font-weight: 700;
 }
 
-#menu, #buttons {
-    position: absolute;
-    z-index: 5;
+* {
+	outline: none;
 }
 
-#buttons {
-    padding-top: 35pxl
+
+#outerdiv {
+	padding: 120px;
+}
+
+#innerdiv {
+	margin: auto;
+	width: 785px;
+	height: 274px;
+}
+
+#form {
+	position: absolute;
+	z-index: 5;
+	width: 550px;
+	margin-top: 70px;
+	line-height: 72px;
+}
+
+#form input {
+	border: none; 
+	background-color: rgba(0,0,0,0);
+	margin-bottom: 50px; 
+	width: 550px;
+	height: 80px;
+	line-height: normal !important;
+}
+
+#times, #form input {
+	font-size: 72px;
+	text-transform: uppercase;
+}
+
+#times {
+	position: absolute;
+	margin-left: 600px;
+	margin-top: 70px;
+	width: 200px;
+}
+
+#diff, #texts {
+	font-size: 32px;
+	text-transform: uppercase;
+}
+
+#start {
+	position: absolute;
+}
+
+#diff {
+	position: absolute;
+	margin-top: 93px;
+	width: 200px;
+}
+
+#end {
+	position: absolute;
+	padding-top: 135px;
+}
+
+#texts {
+	position: absolute;
+	margin-top: 35px;
+	overflow: none;
+	white-space: nowrap;
+}
+
+#texts #andin {
+	margin-top: 85px;
 }
