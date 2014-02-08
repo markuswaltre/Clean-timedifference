@@ -25,40 +25,8 @@
           return (dst+raw)/(60*60);
         }
 
-        var geocoder;
-        var map;
-        // initializes google maps geocoder and map
-        // executes on body onload()
-        function initialize() {
+        var geocoder = new google.maps.Geocoder();
 
-          geocoder = new google.maps.Geocoder();
-          var mapOptions = {
-            zoom: 1,
-            center: new google.maps.LatLng(0, 0),
-            disableDefaultUI: true,
-          }
-
-          // simple style for map
-          var stylesArray = [
-          {
-            featureType: 'all',
-            stylers: [
-            {color: "#dafec2"},
-            {visibility: "simplified"}
-            ]
-          },
-          {
-            featureType: 'water',
-            stylers: [
-            {color: "#ffffff"}, //#e4ffff"},
-            {visibility: "simplified"}
-            ]
-          }]
-
-          // create map and attach to canvas
-          map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
-          map.setOptions({ styles: stylesArray });
-        }
 
         // encodes the address from a string
         // to a location in Latitud & Longitud
