@@ -44,7 +44,6 @@ body, #form input {
 	position: absolute;
 	margin-left: 600px;
 	margin-top: 70px;
-	width: 200px;
 }
 
 #diff, #texts {
@@ -59,7 +58,7 @@ body, #form input {
 #diff {
 	position: absolute;
 	margin-top: 93px;
-	width: 200px;
+	width: 250px;
 }
 
 #end {
@@ -76,4 +75,17 @@ body, #form input {
 
 #texts #andin {
 	margin-top: 85px;
+}
+
+#texts, #diff {
+	color: #aaaaaa;
+}
+
+#texts span {
+	color: red;
+}
+
+#message {
+	position: absolute;
+	padding-top: 290px;
 }
