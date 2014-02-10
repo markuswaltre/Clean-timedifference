@@ -5,6 +5,9 @@ body, #form input {
 
 body {
 	background-color: #f9f9f9;
+	background-image: url("images/world.png");
+	background-position: -105px -50px;
+
 }
 
 * {
@@ -86,7 +89,7 @@ body {
 }
 
 #texts span {
-	color: red;
+	/*color: red;*/
 }
 
 #message {
